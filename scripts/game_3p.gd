@@ -849,6 +849,8 @@ func _unhandled_input(event: InputEvent) -> void:
 func _hit(node: Node3D, screen_pos: Vector2, radius: float) -> bool:
 	if camera == null or node == null:
 		return false
+	if not node.visible:
+		return false
 	var projected := camera.unproject_position(node.global_position)
 	return projected.distance_to(screen_pos) <= radius
 

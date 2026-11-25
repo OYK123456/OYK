@@ -43,6 +43,8 @@ func _ready() -> void:
 			current.force_punish()
 		elif state_arg == "round3" and current != null and current.has_method("force_third_round"):
 			current.force_third_round()
+		elif state_arg == "click3" and current != null and current.has_method("verify_buttons"):
+			current.verify_buttons()
 		elif state_arg == "round2" and current != null and current.has_method("force_second_round"):
 			current.force_second_round()
 		elif state_arg == "wait" and current != null and current.has_method("force_wait"):

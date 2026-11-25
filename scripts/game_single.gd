@@ -529,11 +529,32 @@ func _unhandled_input(event: InputEvent) -> void:
 func _hit(node: Node3D, screen_pos: Vector2, radius: float) -> bool:
 	if camera == null or node == null:
 		return false
+	# 不可见的按钮不参与命中判定：
+	# 两个按钮挪到同一个位置后，若不做这一步，隐藏的「结束回合」会先吃掉点击
+	if not node.visible:
+		return false
 	var projected := camera.unproject_position(node.global_position)
 	return projected.distance_to(screen_pos) <= radius
 
 
 # ---------------- 自检 ----------------
+
+func verify_buttons() -> void:
+	round = MAX_ROUNDS
+	settled = false
+	_refresh_ui()
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var settle_pos := camera.unproject_position(button_settle.global_position)
+	var hit_next := _hit(button_next, settle_pos, 85.0)
+	var hit_settle := _hit(button_settle, settle_pos, 95.0)
+	print("[TEST] 第 %d 轮：settle.visible=%s  next.visible=%s" % [round, button_settle.visible, button_next.visible])
+	print("[TEST] 点在结算按钮上 -> next 命中=%s，settle 命中=%s" % [hit_next, hit_settle])
+	if (not hit_next) and hit_settle:
+		print("[TEST] PASS：结算按钮能正常接收点击")
+	else:
+		print("[TEST] FAIL：结算按钮的点击被其它控件拦截")
+
 
 func _card(value: int, suit: int) -> Dictionary:
 	return {"value": value, "suit": suit}
